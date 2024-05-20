@@ -1,0 +1,1 @@
+pyinstaller --onedir --add-data ".venv/Lib/site-packages/mediapipe:mediapipe/" .\main.py
