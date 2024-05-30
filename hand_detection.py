@@ -1,4 +1,5 @@
 # hand_detection.py
+import os
 import cv2
 import numpy as np
 import pyautogui
@@ -10,6 +11,24 @@ from slide_control import pass_slide
 from pynput.mouse import Controller as MouseController
 
 MController = MouseController()
+
+def create_config(server_ip, server_port):
+    config_data = {
+        "server_ip": server_ip,
+        "server_port": server_port
+    }
+    with open("config.json", "w") as f:
+        json.dump(config_data, f, indent=4)
+
+def load_config():
+    with open("config.json", "r") as f:
+        config = json.load(f)
+    return config
+
+# Verifica se o arquivo de configuração já existe
+if not os.path.exists("config.json"):
+    create_config("127.0.0.1", 5000)
+config = load_config()
 
 def process_hand_movement(handsStatus, HandlePos):
     if handsStatus.get("Left") is not None:
@@ -35,7 +54,7 @@ def start_hand_detection(camera_index):
             break
 
         _, img_encoded = cv2.imencode('.jpg', img)
-        response = requests.post('http://127.0.0.1:5000/detect', data=img_encoded.tobytes())
+        response = requests.post(f'http://{config["server_ip"]}:{config["server_port"]}/detect', data=img_encoded.tobytes())
         response_data = response.json()
 
         hands = response_data['hands']
