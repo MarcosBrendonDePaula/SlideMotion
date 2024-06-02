@@ -1,0 +1,1 @@
+pyinstaller --onefile --name client ./src/main.py
